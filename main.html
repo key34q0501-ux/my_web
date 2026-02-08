@@ -26,10 +26,25 @@
             color: #17921f; 
             font-size: 32px;
         }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3a88e7;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .btn-group {
             margin-top: 20px;
             display: flex;
-            gap: 10px; /* 버튼 사이 간격 */
+            gap: 10px;
+            flex-wrap: wrap;
             justify-content: center;
         }
         button {
@@ -40,34 +55,37 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+        }
+        button:hover { 
+            filter: brightness(0.9); 
+            transform: scale(1.05) translateY(-2px);
         }
         /* 수학 문제 버튼은 초록색으로 포인트를 줬어요 */
         #mathquiz-btn { background-color: #d25757; }    /* # -> id */
-        #mathquiz-btn:hover { filter: brightness(0.9); transform: scale(1.05) translateY(-2px);}
         #drama-btn { background-color: orange;}
-        #drama-btn:hover { filter: brightness(0.9); transform: scale(1.05) translateY(-2px);}
-        #jjangu-btn { background-color: rgb(226, 226, 45);}
-        #jjangu-btn:hover {filter: brightness(0.9); transform: scale(1.05) translateY(-2px);}
-        #logout-btn:hover { background-color: #555; transform: scale(1.05) translateY(-2px);}
+        #jjangu-btn { background-color: rgb(225, 225, 58);}
+        #workspace-btn { background-color: rgb(139, 212, 30); }
+        #logout-btn { background-color: #555; }
     </style>
 </head>
 <body>
     <div class="welcome-box">
-        <h1 id="user-name-display">환영합니다!</h1>
+        <h1 id="user-name-display"></h1>
+        <div id="loader" class="loader"></div>
         <p>당신만을 위한 놀이방입니다.</p>
         
         <div class="btn-group">
             <button id="mathquiz-btn">수학 문제 풀기</button>
             <button id="drama-btn">드라마 명대사 월드컵</button>
             <button id="jjangu-btn">짱구 명대사 월드컵</button>
+            <button id="workspace-btn">관리자 공간</button>
             <button id="logout-btn">로그아웃</button>
         </div>
     </div>
 
     <script>
         window.onload = function() {
-            // [수정] getitem -> getItem (대문자 I 필수!)
             const loggedInUser = localStorage.getItem('currentId');
 
             if (loggedInUser) {
@@ -88,7 +106,28 @@
         document.getElementById('jjangu-btn').addEventListener('click', function() {
             window.location.href = 'jjangu-worldcup.html'
         })
+        document.getElementById('workspace-btn').addEventListener('click', function() {
+            const pw = prompt("작업실 비밀번호를 입력해주세요.");
 
+            if (pw !== null && btoa(pw) === "MjAyMA==") {
+
+                const welcomeTitle = document.getElementById('user-name-display');
+                const loader = document.getElementById('loader');
+                const btnGroup = document.querySelector('.btn-group');
+                welcomeTitle.textContent = "승범님, 환영합니다! 잠시 후 이동합니다...";
+                welcomeTitle.style.color = "#3a88e7";
+
+                loader.style.display = "block";
+                btnGroup.style.display = "none";
+
+                setTimeout(function() {
+                    window.location.href = 'workspace.html';
+                }, 2000);
+            
+            } else if (pw !== null) {
+                alert("비밀번호가 틀렸습니다. 접근 권한이 없습니다.");
+            }
+        });
         // 로그아웃 버튼 클릭 시
         document.getElementById('logout-btn').addEventListener('click', function() {
             localStorage.removeItem('currentId');

@@ -35,7 +35,7 @@ let items = [
         image: "drama_img/sky_castle.jpg"
     },
     { 
-        text: "멋지다 연진아! 브라보!", 
+        text: "오늘부터 내 꿈은 너야, 연진아. 우리 꼭 또 보자.", 
         title: "더 글로리", year: 2022,
         image: "drama_img/the_glory.jpg"
     },
@@ -125,7 +125,7 @@ let items = [
         image: "drama_img/my_mister.jpg"
     },
     { 
-        text: "천송이 씨, 내가... 너를...", 
+        text: "떠나기 싫어 죽겠습니다. 여기서 당신이랑 같이 늙어가고 싶습니다.", 
         title: "별에서 온 그대", year: 2013,
         image: "drama_img/my_love_from_the_star.jpg"
     },
