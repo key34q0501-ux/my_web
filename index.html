@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>my_web</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        /* CSS: 화면을 예쁘게 꾸미는 부분 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .login-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            transform: translateY(20px);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+        input::-webkit-contacts-auto-fill-button,
+        input::-webkit-credentials-auto-fill-button {
+            visibility: hidden;
+            display: none !important;
+            pointer-events: none;
+        }
+
+        input:focus {
+            border: 2px solid #ac8feb;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3a88e7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0.5px 5px rgba(0, 0, 0, 0.1)
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* --- 아이콘 관련 스타일 추가 --- */
+        /* 2. 비밀번호 입력창과 아이콘을 감싸는 컨테이너 */
+        .password-container {
+            position: relative;
+            width: 100%;
+            margin: 10px 0; /* input의 margin과 동일하게 맞춤 */
+        }
+
+        /* 컨테이너 안의 input 스타일 재정의 */
+        .password-container input {
+            margin: 0; /* 컨테이너가 margin을 가지므로 input은 제거 */
+            padding-right: 40px; /* 아이콘 공간 확보 */
+        }
+
+        /* 3. 아이콘 버튼 스타일 */
+        #toggle-pw {
+            background: none;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            color: #999; /* 기본 색상 연하게 */
+            display: flex;
+            align-items: center;
+            position: absolute; /* 절대 위치로 입력창 위에 배치 */
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%); /* 수직 중앙 정렬 */
+            z-index: 2;
+            width: auto; /* 기존 width: 100% 덮어쓰기 */
+            margin: 0;   /* 기존 margin-top 덮어쓰기 */
+        }
+        
+        #toggle-pw:hover {
+             background-color: transparent; /* hover시 배경색 변경 방지 */
+             box-shadow: none; /* hover시 그림자 방지 */
+             transform: translateY(-50%); /* hover시 위로 뜨는 효과 방지 */
+        }
+
+        /* 구글 아이콘 크기 및 호버 효과 */
+        .material-symbols-outlined {
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        #toggle-pw:hover .material-symbols-outlined {
+            color: #333; /* 마우스 올리면 진하게 */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-box">
+        <h2>로그인</h2>
+        <form>
+            <input type="text" id="user-id" placeholder="아이디를 입력하세요">
+
+            <div class="password-container">
+                <input type="password" placeholder="비밀번호">
+                <button type="button" id="toggle-pw">
+                    <span class="material-symbols-outlined">visibility</span>
+                </button>
+            </div>
+
+            <p id="error-message" style="color: #be2727; font-size: 12px; margin: 5px 0 ; text-align: left; height: 18px"></p>
+
+            <div style="text-align: left; margin-bottom: 10px;">
+                <input type="checkbox" id="save-id" style="width: auto; margin-right: 5px;">
+                <label for="save-id" style="font-size: 13px">아이디 저장</label>
+            </div>
+
+            <button type="button" id="login-btn">로그인</button>
+        </form>
+    </div>
+
+    <script>
+        const loginButton = document.querySelector('#login-btn');
+        const idInput = document.querySelector('#user-id');
+        const pwInput = document.querySelector('input[type="password"]');
+        const saveCheck = document.querySelector('#save-id');
+        const errorMsg = document.querySelector('#error-message');
+        
+        const togglePwBtn = document.querySelector('#toggle-pw');
+        const toggleIcon = togglePwBtn.querySelector('span'); // 아이콘 태그 찾기
+
+        window.onload = function () {
+            const savedId = localStorage.getItem('savedId');
+            if (savedId) {
+                idInput.value = savedId;
+                saveCheck.checked = true;
+            }
+        }
+
+        loginButton.addEventListener('click', function () {
+            const idValue = idInput.value;
+            const pwValue = pwInput.value;
+            
+            if (idValue === "") {
+                errorMsg.textContent = "아이디를 입력해주세요!";
+            } else if (pwValue === "") {
+                errorMsg.textContent = "비밀번호를 입력해주세요!";
+            } else if (pwValue.length < 4) {
+                errorMsg.textContent = "비밀번호는 4자리 이상이어야 합니다!";
+            } else {
+                errorMsg.textContent = "";
+
+                localStorage.setItem('currentId', idValue);
+
+                if (saveCheck.checked) {
+                    localStorage.setItem('savedId', idValue);
+                } else {
+                    localStorage.removeItem('savedId');
+                }
+                // alert(idValue + '님 환영합니다!');
+
+                window.open('main.html', '_blank');
+            }
+        });
+
+        window.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                loginButton.click();
+            }
+        });
+
+        idInput.addEventListener('input', function () {
+            if (idInput.value !== "") {
+                errorMsg.textContent = "";
+            }
+        });
+
+        pwInput.addEventListener('input', function () {
+            if (pwInput.value !== "") {
+                errorMsg.textContent = "";
+            }
+        });
+
+        // --- 5. 아이콘 변경 스크립트 ---
+        function showPassword() {
+            pwInput.type = 'text';
+            toggleIcon.textContent = 'visibility_off'; // 사선 그어진 눈 아이콘
+        }
+
+        function hidePassword() {
+            pwInput.type = 'password';
+            toggleIcon.textContent = 'visibility'; // 원래 눈 아이콘
+        }
+
+        togglePwBtn.addEventListener('mousedown', showPassword);
+        togglePwBtn.addEventListener('mouseup', hidePassword);
+        togglePwBtn.addEventListener('mouseleave', hidePassword);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title>드라마 명대사 월드컵</title>
+    <style>
+        .world-cup-container {
+            text-align: center;
+            max-width: 1000px;
+            margin: 50px auto;
+        }
+
+        .match-up {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+            transition: opacity 0.2s ease-in-out;
+            opacity: 1;
+        }
+
+        .sentence-box {
+            flex: 1;
+            flex-direction: column;
+            text-align: center;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            font-size: 1.2rem;  /* 기본 폰트 크기의 1.2배 */
+            word-break: keep-all; /* 단어 단위 줄바꿈 */
+        }
+
+        .sentence-box:hover {
+            transform: translateY(-5px);
+            border-color: #3a88e7;
+            background-color: #f0f7ff;
+        }
+        .main-sentence {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 50px;    
+        }
+        .sub-info {
+            font-size: 0.95rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .vs {
+            font-weight: bold;
+            font-size: 2rem;
+            color: #be2727;
+        }
+        .progress-outer{
+            width: 100%;
+            height: 12PX;
+            background-color: #eee;
+            border-radius: 10px;
+            margin: 20px 0 40px 0;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }   
+        #progress-inner {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #3a88e7, #7eb6ff);
+            transition: width 0.4s ease;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+
+            padding: 7px 15px;
+            background-color: #eee;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .back-btn:hover {
+            filter: brightness(0.95);
+            border-color: #3a88e7;
+            color:#3a88e7;
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0.5px 5px rgba(0, 0, 0, 0.05);
+        }
+        .restart-btn {
+            margin-top: 30px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background-color: #3a88e7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .restart-btn:hover {
+            background-color: #2a6ec0;
+            transform: scale(1.05) translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='main.html'">홈으로</button>
+    <div class="world-cup-container">
+        <h2 id="round-title"></h2>
+        <div class="progress-outer">
+            <div id="progress-inner"></div>
+        </div>
+        <div class="match-up">
+            <div class="sentence-box" id="left-box" onclick="select(0)">
+                <div class="content-wrapper">
+                    <p id="left-text" class="main-sentence"></p>
+                    <p id="left-info" class="sub-info"></p>
+                </div>
+
+            </div>
+
+            <div class="vs">VS</div>
+
+            <div class="sentence-box" id="right-box" onclick="select(1)">
+                <div class="content-wrapper">
+                    <p id="right-text" class="main-sentence"></p>
+                    <p id="right-info" class="sub-info"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="drama_data.js"></script>
+    <script>
+        items.sort(() => Math.random() - 0.5);
+
+        let roundItems = [...items]; // 현재 라운드 진행 중인 목록
+        let nextRoundItems = [];     // 선택되어 다음 라운드로 올라간 목록
+        let currentIndex = 0;        // 현재 대결 중인 인덱스
+        let totalMatches = items.length - 1;
+        let matchesPlayed = 0;
+
+        // 2. 화면 업데이트 함수
+        function updateDisplay() {
+            if (roundItems.length === 1) {
+                document.getElementById('round-title').innerText = "🏆 우승!";
+                document.getElementById('progress-inner').style.width = "100%";
+                document.querySelector('.match-up').innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                        <h1 style="color: black; margin-bottom: 10px;">"${roundItems[0].text}"</h1>
+                        <p class="sub-info" style="margin-bottom: 25px; font-size: 1.1rem">${roundItems[0].title} | ${roundItems[0].year}</p>
+                        <button class="restart-btn" onclick="restartGame()">월드컵 다시하기</button>
+                    </div>
+                `;
+                celebration();       
+                return;
+            }
+
+            let progressPercent = (matchesPlayed / totalMatches) * 100;
+            document.getElementById('progress-inner').style.width = progressPercent + "%";
+
+            document.getElementById('left-text').innerText = roundItems[currentIndex].text;
+            document.getElementById('left-info').innerText = `${roundItems[currentIndex].title} (${roundItems[currentIndex].year})`;
+            document.getElementById('right-text').innerText = roundItems[currentIndex + 1].text;
+            document.getElementById('right-info').innerText = `${roundItems[currentIndex + 1].title} (${roundItems[currentIndex + 1].year})`;
+            document.getElementById('round-title').innerText = `${roundItems.length}강 (${currentIndex/2 + 1} / ${roundItems.length/2})`;
+        }
+        function restartGame() {
+            roundItems = [...items];
+            roundItems.sort(() => Math.random() - 0.5);
+            nextRoundItems = [];
+            currentIndex = 0;
+            matchesPlayed = 0;
+
+            document.querySelector('.match-up').innerHTML = `
+                <div class="sentence-box" id="left-box" onclick="select(0)">
+                    <div class="content-wrapper">
+                        <p id="left-text" class="main-sentence"></p>
+                        <p id="left-info" class="sub-info"></p>
+                    </div>
+                </div>
+                <div class="vs">VS</div>
+                <div class="sentence-box" id="right-box" onclick="select(1)">
+                    <div class="content-wrapper">
+                        <p id="right-text" class="main-sentence"></p>
+                        <p id="right-info" class="sub-info"></p>
+                    </div>
+                </div>
+            `;
+
+            updateDisplay();
+        }
+
+        // 3. 선택 로직
+        function select(choice) {
+            const matchUpContainer = document.querySelector('.match-up');
+
+            matchUpContainer.style.opacity = '0';
+
+            setTimeout(() => {
+
+            
+            // 선택된 아이템을 다음 라운드 리스트에 추가
+            nextRoundItems.push(roundItems[currentIndex + choice]);
+            currentIndex += 2;
+            matchesPlayed++;
+
+            // 현재 라운드 경기가 모두 끝났다면?
+            if (currentIndex >= roundItems.length) {
+                roundItems = [...nextRoundItems];
+                nextRoundItems = [];
+                currentIndex = 0;
+            }
+            updateDisplay();
+
+            matchUpContainer.style.opacity = '1';
+            }, 200); //0.2초 대기
+        }
+        function celebration() {
+            var count = 800;
+            var defaults = { origin: { y: 0.75 }, ticks: 100 };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+        }
+
+        // 초기 실행
+        updateDisplay();
+    </script>
+</body>
+</html>

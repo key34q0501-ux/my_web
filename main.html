@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>홈 화면</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center; /* 가로위치 */
+            align-items: flex-start; /* 세로위치 */
+            height: 100vh;
+            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+            margin: 10px;
+            padding-top: 50px;
+        }
+        .welcome-box {
+            background-color: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 { 
+            color: #17921f; 
+            font-size: 32px;
+        }
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px; /* 버튼 사이 간격 */
+            justify-content: center;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #eee;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        /* 수학 문제 버튼은 초록색으로 포인트를 줬어요 */
+        #mathquiz-btn { background-color: #d25757; }    /* # -> id */
+        #mathquiz-btn:hover { filter: brightness(0.9); transform: scale(1.05) translateY(-2px);}
+        #drama-btn { background-color: orange;}
+        #drama-btn:hover { filter: brightness(0.9); transform: scale(1.05) translateY(-2px);}
+        #jjangu-btn { background-color: rgb(226, 226, 45);}
+        #jjangu-btn:hover {filter: brightness(0.9); transform: scale(1.05) translateY(-2px);}
+        #logout-btn:hover { background-color: #555; transform: scale(1.05) translateY(-2px);}
+    </style>
+</head>
+<body>
+    <div class="welcome-box">
+        <h1 id="user-name-display">환영합니다!</h1>
+        <p>당신만을 위한 놀이방입니다.</p>
+        
+        <div class="btn-group">
+            <button id="mathquiz-btn">수학 문제 풀기</button>
+            <button id="drama-btn">드라마 명대사 월드컵</button>
+            <button id="jjangu-btn">짱구 명대사 월드컵</button>
+            <button id="logout-btn">로그아웃</button>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // [수정] getitem -> getItem (대문자 I 필수!)
+            const loggedInUser = localStorage.getItem('currentId');
+
+            if (loggedInUser) {
+                document.getElementById('user-name-display').textContent = loggedInUser + "님, 환영합니다!";
+            } else {
+                alert("로그인이 필요합니다!");
+                location.href = 'index.html';
+            }
+        };
+
+        // 수학 문제 풀기 버튼 클릭 시
+        document.getElementById('mathquiz-btn').addEventListener('click', function() {
+            window.location.href = 'quiz.html';
+        });
+        document.getElementById('drama-btn').addEventListener('click', function() {
+            window.location.href = 'drama.html'
+        })
+        document.getElementById('jjangu-btn').addEventListener('click', function() {
+            window.location.href = 'jjangu-worldcup.html'
+        })
+
+        // 로그아웃 버튼 클릭 시
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem('currentId');
+            location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
