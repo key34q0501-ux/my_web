@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,16 +28,26 @@
             text-align: center;
             height: 300px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
-            padding: 20px;
+            padding: 20px 20px 40px 20px;
             background: white;
             border: 2px solid #ddd;
             border-radius: 15px;
             cursor: pointer;
             transition: transform 0.2s, border-color 0.2s;
-            font-size: 1.2rem;  /* 기본 폰트 크기의 1.2배 */
-            word-break: keep-all; /* 단어 단위 줄바꿈 */
+            font-size: 1.2rem;
+            word-break: keep-all;
+
+            background-size: cover;
+            background-position: top center;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+        .content-wrapper {
+            z-index: 2;
+            width: 100%;
         }
 
         .sentence-box:hover {
@@ -44,14 +55,17 @@
             border-color: #3a88e7;
             background-color: #f0f7ff;
         }
+
         .main-sentence {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            margin-bottom: 50px;    
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
+
         .sub-info {
-            font-size: 0.95rem;
-            color: #666;
+            font-size: 1rem;
+            color: #ddd;
             font-style: italic;
         }
 
@@ -60,7 +74,8 @@
             font-size: 2rem;
             color: #be2727;
         }
-        .progress-outer{
+
+        .progress-outer {
             width: 100%;
             height: 12PX;
             background-color: #eee;
@@ -68,13 +83,15 @@
             margin: 20px 0 40px 0;
             overflow: hidden;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }   
+        }
+
         #progress-inner {
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #3a88e7, #7eb6ff);
             transition: width 0.4s ease;
         }
+
         .back-btn {
             position: absolute;
             top: 20px;
@@ -92,13 +109,15 @@
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
+
         .back-btn:hover {
             filter: brightness(0.95);
             border-color: #3a88e7;
-            color:#3a88e7;
+            color: #3a88e7;
             transform: scale(1.05) translateY(-2px);
             box-shadow: 0.5px 5px rgba(0, 0, 0, 0.05);
         }
+
         .restart-btn {
             margin-top: 30px;
             padding: 12px 25px;
@@ -111,12 +130,14 @@
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
         }
+
         .restart-btn:hover {
             background-color: #2a6ec0;
             transform: scale(1.05) translateY(-2px);
         }
     </style>
 </head>
+
 <body>
     <button class="back-btn" onclick="location.href='main.html'">홈으로</button>
     <div class="world-cup-container">
@@ -159,24 +180,33 @@
                 document.getElementById('round-title').innerText = "🏆 우승!";
                 document.getElementById('progress-inner').style.width = "100%";
                 document.querySelector('.match-up').innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-                        <h1 style="color: black; margin-bottom: 10px;">"${roundItems[0].text}"</h1>
-                        <p class="sub-info" style="margin-bottom: 25px; font-size: 1.1rem">${roundItems[0].title} | ${roundItems[0].year}</p>
+                <div class="sentence-box" style="width: 100%; cursor: default; background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${roundItems[0].image}')">
+                    <div class="content-wrapper">
+                        <h1 style="margin-bottom: 15px;">"${roundItems[0].text}"</h1>
+                        <p class="sub-info" style="font-size: 1.2rem">${roundItems[0].title} | ${roundItems[0].year}</p>
                         <button class="restart-btn" onclick="restartGame()">월드컵 다시하기</button>
                     </div>
+                </div>
                 `;
-                celebration();       
+                celebration();
                 return;
             }
 
             let progressPercent = (matchesPlayed / totalMatches) * 100;
             document.getElementById('progress-inner').style.width = progressPercent + "%";
 
+            const leftBox = document.getElementById('left-box');
+            const rightBox = document.getElementById('right-box');
+
             document.getElementById('left-text').innerText = roundItems[currentIndex].text;
             document.getElementById('left-info').innerText = `${roundItems[currentIndex].title} (${roundItems[currentIndex].year})`;
+            leftBox.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${roundItems[currentIndex].image}')`;
+
             document.getElementById('right-text').innerText = roundItems[currentIndex + 1].text;
             document.getElementById('right-info').innerText = `${roundItems[currentIndex + 1].title} (${roundItems[currentIndex + 1].year})`;
-            document.getElementById('round-title').innerText = `${roundItems.length}강 (${currentIndex/2 + 1} / ${roundItems.length/2})`;
+            rightBox.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${roundItems[currentIndex + 1].image}')`;
+
+            document.getElementById('round-title').innerText = `${roundItems.length}강 (${currentIndex / 2 + 1} / ${roundItems.length / 2})`;
         }
         function restartGame() {
             roundItems = [...items];
@@ -212,21 +242,21 @@
 
             setTimeout(() => {
 
-            
-            // 선택된 아이템을 다음 라운드 리스트에 추가
-            nextRoundItems.push(roundItems[currentIndex + choice]);
-            currentIndex += 2;
-            matchesPlayed++;
 
-            // 현재 라운드 경기가 모두 끝났다면?
-            if (currentIndex >= roundItems.length) {
-                roundItems = [...nextRoundItems];
-                nextRoundItems = [];
-                currentIndex = 0;
-            }
-            updateDisplay();
+                // 선택된 아이템을 다음 라운드 리스트에 추가
+                nextRoundItems.push(roundItems[currentIndex + choice]);
+                currentIndex += 2;
+                matchesPlayed++;
 
-            matchUpContainer.style.opacity = '1';
+                // 현재 라운드 경기가 모두 끝났다면?
+                if (currentIndex >= roundItems.length) {
+                    roundItems = [...nextRoundItems];
+                    nextRoundItems = [];
+                    currentIndex = 0;
+                }
+                updateDisplay();
+
+                matchUpContainer.style.opacity = '1';
             }, 200); //0.2초 대기
         }
         function celebration() {
@@ -250,4 +280,5 @@
         updateDisplay();
     </script>
 </body>
+
 </html>
