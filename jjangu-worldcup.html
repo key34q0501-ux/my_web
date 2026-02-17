@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <title>짱구 명대사 월드컵</title>
+    <title>드라마 명대사 월드컵</title>
     <style>
         .world-cup-container {
             text-align: center;
@@ -17,24 +18,59 @@
             justify-content: space-around;
             align-items: center;
             gap: 20px;
+            transition: opacity 0.2s ease-in-out;
+            opacity: 1;
         }
 
         .sentence-box {
             flex: 1;
             flex-direction: column;
             text-align: center;
-            height: 300px;
+            height: 450px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
-            padding: 20px;
-            background: white;
+            background: #fff;
             border: 2px solid #ddd;
             border-radius: 15px;
             cursor: pointer;
             transition: transform 0.2s, border-color 0.2s;
-            font-size: 1.2rem;  /* 기본 폰트 크기의 1.2배 */
-            word-break: keep-all; /* 단어 단위 줄바꿈 */
+            font-size: 1.2rem;
+            word-break: keep-all;
+
+            background-size: cover;
+            background-position: top center;
+            color: #333;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        .info-area {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .select-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #3a88e7;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .select-btn:hover {
+            background-color: #1c5ba8;
+        }
+
+        .content-wrapper {
+            z-index: 2;
+            width: 100%;
         }
 
         .sentence-box:hover {
@@ -42,14 +78,17 @@
             border-color: #3a88e7;
             background-color: #f0f7ff;
         }
+
         .main-sentence {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            margin-bottom: 50px;    
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
+
         .sub-info {
-            font-size: 0.95rem;
-            color: #666;
+            font-size: 1rem;
+            color: #ddd;
             font-style: italic;
         }
 
@@ -58,7 +97,8 @@
             font-size: 2rem;
             color: #be2727;
         }
-        .progress-outer{
+
+        .progress-outer {
             width: 100%;
             height: 12PX;
             background-color: #eee;
@@ -66,13 +106,15 @@
             margin: 20px 0 40px 0;
             overflow: hidden;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }   
+        }
+
         #progress-inner {
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #3a88e7, #7eb6ff);
             transition: width 0.4s ease;
         }
+
         .back-btn {
             position: absolute;
             top: 20px;
@@ -90,13 +132,15 @@
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
+
         .back-btn:hover {
             filter: brightness(0.95);
             border-color: #3a88e7;
-            color:#3a88e7;
-            transform: translateY(-2px);
+            color: #3a88e7;
+            transform: scale(1.05) translateY(-2px);
             box-shadow: 0.5px 5px rgba(0, 0, 0, 0.05);
         }
+
         .restart-btn {
             margin-top: 30px;
             padding: 12px 25px;
@@ -109,12 +153,14 @@
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
         }
+
         .restart-btn:hover {
             background-color: #2a6ec0;
             transform: scale(1.05) translateY(-2px);
         }
     </style>
 </head>
+
 <body>
     <button class="back-btn" onclick="location.href='main.html'">홈으로</button>
     <div class="world-cup-container">
@@ -141,26 +187,8 @@
             </div>
         </div>
     </div>
+    <script src="jjangu-worldcup.js"></script>
     <script>
-        let items = [
-            { text: "꿈은 도망가지 않아. 도망가는 건 언제나 자신이지.", title: "9기: 어른제국의 역습", year: 2001 },
-            { text: "내 인생은 결코 보잘것없지 않아! 가족이 주는 행복이 얼마나 큰지 네게 알려주고 싶을 정도라고!", title: "9기: 어른제국의 역습", year: 2001 },
-            { text: "할 수 있다고 생각하니까 할 수 있는 거다.", title: "짱구는 못말려 TVA", year: 1992 },
-            { text: "짱구야, 아빠가 인생에서 가장 행복하다고 생각했을 때가 언제인지 아니? 바로 네가 태어났을 때야.", title: "22기: 정면승부! 로봇아빠의 역습", year: 2014 },
-            { text: "내 보물은 미선이와 짱구, 짱아라고! 내 가족이라고!", title: "22기: 정면승부! 로봇아빠의 역습", year: 2014 },
-            { text: "평범한 삶이야말로 가장 큰 행복이야.", title: "4기: 핸더랜드의 대모험", year: 1996 },
-            { text: "약한 자일수록 상대방을 용서하지 못한다. 용서한다는 것은 강하다는 증거다.", title: "짱구는 못말려 TVA", year: 1992 },
-            { text: "정의의 편이라고 해도, 약한 사람을 괴롭히는 건 나쁜 거야!", title: "1기: 액션가면 대 그래그래 마왕", year: 1993 },
-            { text: "짱아는 오빠가 지켜줄게!", title: "8기: 폭풍을 부르는 정글", year: 2000 },
-            { text: "계획대로 안 되는 게 인생이야. 똑똑히 기억해둬!", title: "9기: 어른제국의 역습", year: 2001 },
-            { text: "누군가를 사랑한다는 건 그 사람의 마음을 지켜주는 거야.", title: "21기: B급 음식 서바이벌!", year: 2013 },
-            { text: "학교 성적이 인생의 전부는 아니야.", title: "29기: 수수께끼! 꽃피는 천하떡잎학교", year: 2021 },
-            { text: "포기하지 않으면 희망은 있습니다.", title: "짱구는 못말려 TVA", year: 1992 },
-            { text: "친구란 건 함께 웃고 함께 우는 사이야.", title: "12기: 폭풍을 부르는 석양의 떡잎마을 방범대", year: 2004 },
-            { text: "내 이름은 신형만, 포기를 모르는 남자지.", title: "짱구는 못말려 TVA", year: 1992 },
-            { text: "우리는 모두 연결되어 있어. 혼자가 아니야.", title: "19기: 태풍을 부르는 황금 스파이 대작전", year: 2011 },
-        ];
-
         items.sort(() => Math.random() - 0.5);
 
         let roundItems = [...items]; // 현재 라운드 진행 중인 목록
@@ -175,24 +203,53 @@
                 document.getElementById('round-title').innerText = "🏆 우승!";
                 document.getElementById('progress-inner').style.width = "100%";
                 document.querySelector('.match-up').innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-                        <h1 style="color: black; margin-bottom: 10px;">"${roundItems[0].text}"</h1>
-                        <p class="sub-info" style="margin-bottom: 25px; font-size: 1.1rem">${roundItems[0].title} | ${roundItems[0].year}</p>
-                        <button class="restart-btn" onclick="restartGame()">월드컵 다시하기</button>
+                    <div class="sentence-box" style="width: 100%; height: 500px;">
+                        <iframe width="100%" height="85%" 
+                            src="https://www.youtube.com/embed/${roundItems[0].videoId}?start=${roundItems[0].start}&end=${roundItems[0].end}" 
+                            frameborder="0" allowfullscreen>
+                        </iframe>
+                        <div class="info-area">
+                            <h2 style="margin: 10px 0;">${roundItems[0].title}</h2>
+                            <button class="restart-btn" onclick="restartGame()">월드컵 다시하기</button>
+                        </div>
                     </div>
                 `;
-                celebration();       
+                celebration();
                 return;
             }
 
             let progressPercent = (matchesPlayed / totalMatches) * 100;
             document.getElementById('progress-inner').style.width = progressPercent + "%";
 
-            document.getElementById('left-text').innerText = roundItems[currentIndex].text;
-            document.getElementById('left-info').innerText = `${roundItems[currentIndex].title} (${roundItems[currentIndex].year})`;
-            document.getElementById('right-text').innerText = roundItems[currentIndex + 1].text;
-            document.getElementById('right-info').innerText = `${roundItems[currentIndex + 1].title} (${roundItems[currentIndex + 1].year})`;
-            document.getElementById('round-title').innerText = `${roundItems.length}강 (${currentIndex/2 + 1} / ${roundItems.length/2})`;
+            const matchUpContainer = document.querySelector('.match-up');
+            
+            // 현재 대결할 두 아이템 정의
+            const left = roundItems[currentIndex];
+            const right = roundItems[currentIndex + 1];
+
+            matchUpContainer.innerHTML = `
+                <div class="sentence-box">
+                    <div class="video-container" style="height: 380px;"> <iframe width="100%" height="100%" 
+                            src="https://www.youtube.com/embed/${left.videoId}?start=${left.start}&end=${left.end}" 
+                            frameborder="0" allowfullscreen>
+                        </iframe>
+                    </div>
+                    <button class="select-btn" onclick="select(0)">이 장면 선택</button>
+                </div>
+
+                <div class="vs">VS</div>
+
+                <div class="sentence-box">
+                    <div class="video-container" style="height: 380px;"> <iframe width="100%" height="100%" 
+                            src="https://www.youtube.com/embed/${right.videoId}?start=${right.start}&end=${right.end}" 
+                            frameborder="0" allowfullscreen>
+                        </iframe>
+                    </div>
+                    <button class="select-btn" onclick="select(1)">이 장면 선택</button>
+                </div>
+            `;
+
+            document.getElementById('round-title').innerText = `${roundItems.length}강 (${currentIndex / 2 + 1} / ${roundItems.length / 2})`;
         }
         function restartGame() {
             roundItems = [...items];
@@ -222,18 +279,28 @@
 
         // 3. 선택 로직
         function select(choice) {
-            // 선택된 아이템을 다음 라운드 리스트에 추가
-            nextRoundItems.push(roundItems[currentIndex + choice]);
-            currentIndex += 2;
-            matchesPlayed++;
+            const matchUpContainer = document.querySelector('.match-up');
 
-            // 현재 라운드 경기가 모두 끝났다면?
-            if (currentIndex >= roundItems.length) {
-                roundItems = [...nextRoundItems];
-                nextRoundItems = [];
-                currentIndex = 0;
-            }
-            updateDisplay();
+            matchUpContainer.style.opacity = '0';
+
+            setTimeout(() => {
+
+
+                // 선택된 아이템을 다음 라운드 리스트에 추가
+                nextRoundItems.push(roundItems[currentIndex + choice]);
+                currentIndex += 2;
+                matchesPlayed++;
+
+                // 현재 라운드 경기가 모두 끝났다면?
+                if (currentIndex >= roundItems.length) {
+                    roundItems = [...nextRoundItems];
+                    nextRoundItems = [];
+                    currentIndex = 0;
+                }
+                updateDisplay();
+
+                matchUpContainer.style.opacity = '1';
+            }, 200); //0.2초 대기
         }
         function celebration() {
             var count = 800;
@@ -256,4 +323,5 @@
         updateDisplay();
     </script>
 </body>
+
 </html>
