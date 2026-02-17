@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <title>드라마 명대사 월드컵</title>
+    <title>짱구 극장판 월드컵</title>
     <style>
         .world-cup-container {
             text-align: center;
@@ -234,7 +234,7 @@
                             frameborder="0" allowfullscreen>
                         </iframe>
                     </div>
-                    <button class="select-btn" onclick="select(0)">이 장면 선택</button>
+                    <button class="select-btn" onclick="select(0)">${left.id}기 : ${left.title} (${left.year})</button>
                 </div>
 
                 <div class="vs">VS</div>
@@ -245,7 +245,7 @@
                             frameborder="0" allowfullscreen>
                         </iframe>
                     </div>
-                    <button class="select-btn" onclick="select(1)">이 장면 선택</button>
+                    <button class="select-btn" onclick="select(1)">${right.id}기 : ${right.title} (${right.year})</button>
                 </div>
             `;
 
